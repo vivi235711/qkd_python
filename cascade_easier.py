@@ -4,7 +4,7 @@ import math
 import time
 import sys
 
-sys.setrecursionlimit(50000)
+sys.setrecursionlimit(50000000)
 
 reveal = 0
 
@@ -54,7 +54,7 @@ def compare_and_correct(Sa, Sb, block_size):
     for i in range(int(math.ceil(len(Sa)/block_size))):
         if i != math.ceil(len(Sa)/block_size)-1:
             if parity(Sa[i*block_size:(i+1)*(block_size)]) != parity(Sb[i*block_size:(i+1)*(block_size)]):
-                split_half(Sa[i*block_size:i*(block_size+1)], Sb[i*block_size:i*(block_size+1)])
+                split_half(Sa[i*block_size:(i+1)*(block_size)], Sb[i*block_size:(i+1)*(block_size)])
         else:
             if parity(Sa[i*block_size:len(Sa)]) != parity(Sb[i*block_size:len(Sa)]):
                 split_half(Sa[i*block_size:len(Sa)], Sb[i*block_size:len(Sa)])
@@ -91,7 +91,7 @@ def error_correct(size, error_rate, repeat):
     # for obj in B:
     #     print( obj.value, end =' ' )
     # print( )
-
+    
     for i in range(repeat-1):   
         index_shuf = list(range(len(A)))
         random.shuffle(index_shuf)
@@ -122,8 +122,8 @@ if __name__ == '__main__':
 
     keyl = []
     rate = []
-    for i in range(4):
-        k ,r = error_correct(10000, 0.1, 4)
+    for i in range(10):
+        k ,r = error_correct(10000, 0.01, 4)
         keyl.append(k)
         rate.append(r)
 
