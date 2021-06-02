@@ -1,2 +1,4 @@
-*.ppyx
+*.pptx
 test.py
+_pycache_
+.vscode
