@@ -73,7 +73,7 @@ def split_half1(blocka,blockb,block_size):
 def compare_and_correct(Sa, Sb, block_size):
     for i in range(int(math.ceil(len(Sa)/block_size))):
         if i != math.ceil(len(Sa)/block_size)-1:
-            if parity(Sa[i*block_size:i*(block_size+1)]) != parity(Sb[i*block_size:i*(block_size+1)]):
+            if parity(Sa[i*block_size:(i+1)*(block_size)]) != parity(Sb[i*block_size:(i+1)*(block_size)]):
                 split_half(Sa[i*block_size:i*(block_size+1)], Sb[i*block_size:i*(block_size+1)])
         else:
             if parity(Sa[i*block_size:len(Sa)]) != parity(Sb[i*block_size:len(Sa)]):
@@ -88,7 +88,7 @@ def compare_and_correct1(Sa, Sb, block_size, index_shuf):
         B_new.append(Sb[j])
     for i in range(int(math.ceil(len(Sa)/block_size))):
         if i != math.ceil(len(Sa)/block_size)-1:
-            if parity(A_new[i*block_size:i*(block_size+1)]) != parity(B_new[i*block_size:i*(block_size+1)]):
+            if parity(A_new[i*block_size:(i+1)*(block_size)]) != parity(B_new[i*block_size:(i+1)*(block_size)]):
                 split_half1(A_new[i*block_size:i*(block_size+1)], B_new[i*block_size:i*(block_size+1)],block_size)
         else:
             if parity(A_new[i*block_size:len(Sa)]) != parity(B_new[i*block_size:len(Sa)]):
@@ -108,12 +108,12 @@ def error_correct(size, error_rate, repeat):
 
     for obj in B:
         obj.inverse(error_rate)    
-    # for obj in A:
-    #     print( obj.value, end =' ' )
-    # print( )
-    # for obj in B:
-    #     print( obj.value, end =' ' )
-    # print( )
+    for obj in A:
+        print( obj.value, end =' ' )
+    print( )
+    for obj in B:
+        print( obj.value, end =' ' )
+    print( )
     b = 0.73
     block_size =int(math.ceil(b/error_rate))
     rate = []
@@ -126,6 +126,12 @@ def error_correct(size, error_rate, repeat):
         random.shuffle(index_shuf)
         
         compare_and_correct1(A, B, block_size,index_shuf)
+        for obj in A:
+            print( obj.value, end =' ' )
+        print( )
+        for obj in B:
+            print( obj.value, end =' ' )
+        print( )
         rate.append(correct_rate(A,B))
 
     keyl = len(A) - reveal/2 - 1
@@ -140,8 +146,8 @@ if __name__ == '__main__':
 
     keyl = []
     rate = []
-    for i in range(10):
-        k ,r = error_correct(10000, 0.02, 4)
+    for i in range(1):
+        k ,r = error_correct(50, 0.02, 2)
         keyl.append(k)
         rate.append(r)
 
