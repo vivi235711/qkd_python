@@ -7,7 +7,7 @@ import cascade_1
 t1 = time.time()
 size = 10000
 repeat = 5
-times = 100
+times = 10
 
 rate1 = np.zeros((25, times))
 rate2 = np.zeros((25, times))
@@ -15,9 +15,9 @@ rate2 = np.zeros((25, times))
 for j in range(25):
     for i in range(times):
         k ,r = cascade_easier.error_correct(size, (j+1)*0.01, repeat)
-        rate1[j][i]=(r.index(1))
+        rate1[j][i]=len(r)-1
         k ,r = cascade_1.error_correct(size, (j+1)*0.01, repeat)
-        rate2[j][i]=(r.index(1))
+        rate2[j][i]=len(r)-1
 
 t2 = time.time()
 print(t2-t1)

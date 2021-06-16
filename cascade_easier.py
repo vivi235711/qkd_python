@@ -3,8 +3,8 @@ import random
 import math
 import time
 import sys
-
-sys.setrecursionlimit(50000000)
+from pandas import DataFrame
+from pandas import ExcelWriter
 
 reveal = 0
 
@@ -109,7 +109,72 @@ def error_correct(size, error_rate, repeat):
         # for obj in B:
         #     print( obj.value, end =' ' )
         # print( )
-        rate.append(correct_rate(A,B))
+        r = correct_rate(A,B)
+        rate.append(r)
+        if r == 1:
+            break
+
+    keyl = len(A) - reveal/2 - 1
+    if keyl < 0:
+        keyl =0
+
+    return  keyl ,rate
+
+def error_correct_double(size, error_rate, repeat):
+    
+    A = []
+    B = []
+    global reveal
+    reveal = 0
+
+    for i in range(size):
+        r = random01(0.5)
+        A.append(bit(r,i))
+        B.append(bit(r,i))
+
+    for obj in B:
+        obj.inverse(error_rate)    
+    # for obj in A:
+    #     print( obj.value, end =' ' )
+    # print( )
+    # for obj in B:
+    #     print( obj.value, end =' ' )
+    # print( )
+    b = 0.73
+    block_size =int(math.ceil(b/error_rate))
+    rate = []
+    rate.append(correct_rate(A,B))
+    compare_and_correct(A, B, block_size)
+    rate.append(correct_rate(A,B))
+    # for obj in A:
+    #     print( obj.value, end =' ' )
+    # print( )
+    # for obj in B:
+    #     print( obj.value, end =' ' )
+    # print( )
+    
+    for i in range(repeat-1):   
+        block_size = block_size
+        index_shuf = list(range(len(A)))
+        random.shuffle(index_shuf)
+        
+        A_new = []
+        B_new = []
+
+        for j in index_shuf:
+            A_new.append(A[j])
+            B_new.append(B[j])
+        compare_and_correct(A_new, B_new, block_size)
+        # for obj in A:
+        #     print( obj.value, end =' ' )
+        # print( )
+        # for obj in B:
+        #     print( obj.value, end =' ' )
+        # print( )
+        r = correct_rate(A,B)
+        rate.append(r)
+        if r == 1:
+            break
 
     keyl = len(A) - reveal/2 - 1
     if keyl < 0:
@@ -118,16 +183,30 @@ def error_correct(size, error_rate, repeat):
     return  keyl ,rate
 
 if __name__ == '__main__':
-    t1 = time.time()
 
-    keyl = []
-    rate = []
-    for i in range(10):
-        k ,r = error_correct(10000, 0.01, 4)
-        keyl.append(k)
-        rate.append(r)
+    size = 10000
+    repeat = 20
+    times = 100
 
-    t2 = time.time()
-    print(t2-t1)
-    print(keyl)
-    print(rate)
+    rate = np.zeros((25, times))
+    length = np.zeros((25, times))
+    sec = np.zeros((25, times))
+
+    for j in range(25):
+        for i in range(times):
+            t1 = time.time()
+            k ,r = error_correct(size, (j+1)*0.01, repeat)
+            t2 = time.time()
+            rate[j][i]=(len(r)-1)
+            length[j][i]=k
+            sec[j][i] = t2-t1
+
+    
+    df1=DataFrame(rate)
+    df2=DataFrame(length)
+    df3=DataFrame(sec)
+
+    with ExcelWriter('cascade_easy.xlsx') as writer:  
+        df1.to_excel(writer, sheet_name = 'iteration')
+        df2.to_excel(writer, sheet_name = 'length')
+        df3.to_excel(writer, sheet_name = 'time')
